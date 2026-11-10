@@ -178,7 +178,7 @@ footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-styl
   <h2 class="rv">Audio Lounge</h2><p class="sub rv">Putar melodi lembut untukmu</p>
   <div class="glass player tilt rv zoom">
     <div class="disc" id="disc"><i class="fa-solid fa-music"></i></div>
-    <h3 style="font-family:var(--serif);color:#fff" id="trackName">Starlight Lullaby</h3>
+    <h3 style="font-family:var(--serif);color:#fff" id="trackName">Summertime by My Chemical Romance</h3>
     <div class="viz" id="viz"></div>
     <button class="pbtn" id="playBtn" aria-label="Putar/Jeda"><i class="fa-solid fa-play"></i></button>
   </div>
@@ -314,29 +314,66 @@ document.addEventListener('DOMContentLoaded', () => {
   lb.addEventListener('click', e => { if(e.target===lb || e.target.closest('.lb-close')) lb.classList.remove('open'); });
   addEventListener('keydown', e => { if(e.key==='Escape') lb.classList.remove('open'); });
 
-  /* ===== Pemutar musik ===== */
+  /* ===== Pemutar musik (dengan Autoplay) ===== */
   $('#trackName').textContent = TRACK_NAME;
   const viz=$('#viz'), bars=[]; for(let i=0;i<24;i++){ const b=document.createElement('i'); viz.appendChild(b); bars.push(b); }
   const disc=$('#disc'), playBtn=$('#playBtn'); let playing=false, vizT=null, actx=null, melT=null, audio=null;
+  
   if(AUDIO_SRC){ audio=new Audio(AUDIO_SRC); audio.loop=true; }
   const NOTES=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46]; let ni=0;
+
   function chime(){
+    if(!actx) return;
     const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=NOTES[ni++%NOTES.length];
     g.gain.setValueAtTime(0,actx.currentTime); g.gain.linearRampToValueAtTime(.12,actx.currentTime+.05); g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+1.6);
     o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+1.7);
   }
-  playBtn.addEventListener('click', () => {
-    playing=!playing;
-    if(playing){
-      if(audio) audio.play().catch(()=>{});
-      else { actx=actx||new (window.AudioContext||window.webkitAudioContext)(); actx.resume(); chime(); melT=setInterval(chime,700); }
-      vizT=setInterval(()=>bars.forEach(b=>b.style.height=(6+Math.random()*54)+'px'),130);
+
+  function startMusic(){
+    if(playing) return;
+    playing = true;
+    if(audio){
+      audio.play().then(() => {
+        disc.classList.add('spin');
+        playBtn.innerHTML=`<i class="fa-solid fa-pause"></i>`;
+        if(!vizT) vizT=setInterval(()=>bars.forEach(b=>b.style.height=(6+Math.random()*54)+'px'),130);
+      }).catch(() => { playing = false; });
     } else {
-      if(audio) audio.pause(); clearInterval(melT); clearInterval(vizT); bars.forEach(b=>b.style.height='6px');
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      if(actx.state === 'suspended') actx.resume();
+      chime(); if(!melT) melT = setInterval(chime, 700);
+      disc.classList.add('spin');
+      playBtn.innerHTML=`<i class="fa-solid fa-pause"></i>`;
+      if(!vizT) vizT=setInterval(()=>bars.forEach(b=>b.style.height=(6+Math.random()*54)+'px'),130);
     }
-    disc.classList.toggle('spin',playing);
-    playBtn.innerHTML=`<i class="fa-solid ${playing?'fa-pause':'fa-play'}"></i>`;
+  }
+
+  function stopMusic(){
+    playing = false;
+    if(audio) audio.pause();
+    clearInterval(melT); clearInterval(vizT); melT=null; vizT=null;
+    bars.forEach(b=>b.style.height='6px');
+    disc.classList.remove('spin');
+    playBtn.innerHTML=`<i class="fa-solid fa-play"></i>`;
+  }
+
+  playBtn.addEventListener('click', () => {
+    playing ? stopMusic() : startMusic();
   });
+
+  // Autoplay otomatis saat halaman dimuat
+  startMusic();
+
+  // Pengaman jika autoplay awal diblokir browser: putar saat ada sentuhan/klik/scroll pertama
+  const enableAudioOnUserAction = () => {
+    if(!playing) startMusic();
+    document.removeEventListener('click', enableAudioOnUserAction);
+    document.removeEventListener('touchstart', enableAudioOnUserAction);
+    document.removeEventListener('scroll', enableAudioOnUserAction);
+  };
+  document.addEventListener('click', enableAudioOnUserAction);
+  document.addEventListener('touchstart', enableAudioOnUserAction);
+  document.addEventListener('scroll', enableAudioOnUserAction);
 
   /* ===== Papan ucapan + konfeti ===== */
   const cards=$('#cards'); let wishes=[
