@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
 
 <style>
-/* ===== 1. VARIABEL WARNA & FONT (ubah di sini) ===== */
+/* ===== 1. VARIABEL WARNA & FONT ===== */
 :root{
   --navy:#0a192f; --navy2:#0b132b; --rose:#e0a96d; --blush:#f4acb7; --cyan:#64ffda;
   --glass:rgba(255,255,255,.06); --line:rgba(224,169,109,.25); --text:#d6dbe8;
@@ -26,7 +26,7 @@ h2{font-family:var(--serif);font-size:clamp(2rem,5vw,3rem);color:#fff;text-align
 .sub{text-align:center;color:var(--blush);margin-bottom:3rem;font-weight:300}
 #stars{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* ===== 2. KURSOR KUSTOM (otomatis nonaktif di layar sentuh) ===== */
+/* ===== 2. KURSOR KUSTOM ===== */
 .cur-dot,.cur-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;display:none}
 .cur-dot{width:8px;height:8px;background:var(--rose);margin:-4px 0 0 -4px}
 .cur-ring{width:36px;height:36px;margin:-18px 0 0 -18px;border:1.5px solid var(--cyan);box-shadow:0 0 18px var(--cyan);transition:width .25s,height .25s,margin .25s}
@@ -53,7 +53,6 @@ nav a:hover{color:var(--blush)}
 @keyframes blink{50%{opacity:0}}
 .date{margin-top:1rem;color:var(--rose);font-family:var(--serif);font-style:italic;font-size:1.2rem}
 
-/* Tombol liquid/glow */
 .btn{position:relative;overflow:hidden;display:inline-block;margin-top:2.2rem;padding:15px 38px;border:0;border-radius:50px;color:#0a192f;font:500 1rem var(--sans);text-decoration:none;
   background:linear-gradient(135deg,var(--rose),var(--blush));box-shadow:0 0 22px rgba(244,172,183,.5);animation:pulse 2.4s ease-in-out infinite;transition:transform .3s}
 .btn::before{content:'';position:absolute;left:var(--x,50%);top:var(--y,50%);width:0;height:0;background:rgba(255,255,255,.55);border-radius:50%;transform:translate(-50%,-50%);transition:width .5s,height .5s}
@@ -63,7 +62,7 @@ nav a:hover{color:var(--blush)}
 .scroll-hint{position:absolute;bottom:26px;color:var(--rose);animation:bob 1.8s infinite}
 @keyframes bob{50%{transform:translateY(10px)}}
 
-/* ===== 5. ABOUT (glassmorphism + tilt) ===== */
+/* ===== 5. ABOUT ===== */
 .glass{background:var(--glass);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 20px 50px rgba(0,0,0,.35)}
 .tilt{transform-style:preserve-3d;transition:transform .15s ease-out;will-change:transform}
 .about{display:grid;grid-template-columns:260px 1fr;gap:2.5rem;padding:2.5rem;align-items:center}
@@ -114,7 +113,7 @@ form.wish{max-width:620px;margin:0 auto 2.5rem;padding:2rem;display:grid;gap:1re
 .card h4{font-family:var(--serif);color:var(--rose);margin-bottom:.4rem}
 .card h4 i{color:var(--blush);margin-right:6px}
 
-/* ===== 9. FOOTER + OMBAK ===== */
+/* ===== 9. FOOTER ===== */
 footer{position:relative;z-index:1;margin-top:80px;text-align:center;padding:60px 6% 130px;background:linear-gradient(transparent,rgba(224,169,109,.07))}
 footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-style:italic;font-size:1.15rem}
 .social{display:flex;justify-content:center;gap:1rem}
@@ -155,13 +154,10 @@ footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-styl
 <section id="about">
   <h2 class="rv">Tentang Talita</h2><p class="sub rv">Sedikit cerita tentang dia</p>
   <div class="glass about tilt rv zoom">
-    <!-- GANTI FOTO: isi AVATAR_URL di bagian JavaScript -->
     <div class="avatar" id="avatar">T</div>
     <div>
-      <!-- GANTI TEKS PESAN HANGAT DI BAWAH -->
       <p>Talita, hari ini dunia mendapat alasan lebih untuk tersenyum. Terima kasih sudah menjadi pribadi yang hangat, tulus, dan selalu membawa cahaya ke mana pun melangkah. Semoga tahun ini menjadi bab paling indah dalam ceritamu.</p>
-      <div class="chips"><!-- GANTI MINAT --><span>✨ Joyful</span><span>👩🏼‍⚕️ NAKES TERSTRONGG</span><span>🎧 Musik</span><span>☕ Best Person to Talk With </span><span>🌸 Softie (walau sering naik pitam sikit)</span></div>
-      <!-- GANTI KUTIPAN FAVORIT -->
+      <div class="chips"><span>✨ Joyful</span><span>👩🏼‍⚕️ NAKES TERSTRONGG</span><span>🎧 Musik</span><span>☕ Best Person to Talk With </span><span>🌸 Softie (walau sering naik pitam sikit)</span></div>
       <blockquote>“Bintang tidak perlu berusaha keras untuk bersinar.”</blockquote>
     </div>
   </div>
@@ -199,9 +195,7 @@ footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-styl
 
 <!-- ===== FOOTER ===== -->
 <footer>
-  <!-- GANTI CATATAN MANIS -->
   <p>Dibuat dengan cinta untuk Talita Humaira Affandi, 10 November 2026.</p>
-  <!-- GANTI LINK SOSIAL MEDIA -->
   <div class="social">
     <a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
     <a href="https://wa.me/" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
@@ -216,15 +210,16 @@ footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-styl
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ===== KONFIGURASI (ubah sesuai kebutuhan) ===== */
-  const AVATAR_URL = '';   // contoh: 'avatar.jpeg' (kosongkan untuk inisial "T")
-  const AUDIO_SRC  = '';   // contoh: 'lagu/favorit.mp3' (kosongkan untuk melodi bawaan)
+  /* ===== KONFIGURASI ===== */
+  const AVATAR_URL = 'avatar.jpeg';   // Menggunakan avatar.jpeg langsung
+  const AUDIO_SRC  = '';   
   const TRACK_NAME = 'Starlight Lullaby';
   const TYPING_TEXTS = ['This day is your day ✨','semoga dirimu jebol snbt ataupun kedinasan tahun depan','shine like the stars this night 🌙','see you on the top talitaa'];
-  /* GALERI: category = filter; img = URL foto (kosongkan untuk placeholder gradien) */
+  
+  /* GALERI */
   const GALLERY = [
-    {cat:'Kenangan', title:'CAR FREE DAYYY',  img:'mirror.jpeg', icon:'fa-heart',        g:['#e0a96d','#f4acb7']},
-    {cat:'Kenangan', title:'LIKAS', img:'likas.jpeg', icon:'fa-cloud-sun',    g:['#f4acb7','#13294b']},
+    {cat:'Kenangan', title:'CAR FREE DAYYY', img:'mirror.jpeg', icon:'fa-heart',     g:['#e0a96d','#f4acb7']},
+    {cat:'Kenangan', title:'LIKAS',          img:'likas.jpeg',  icon:'fa-cloud-sun', g:['#f4acb7','#13294b']},
   ];
 
   const $ = s => document.querySelector(s);
@@ -286,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   document.querySelectorAll('.tilt').forEach(bindTilt);
 
-  /* ===== Tombol liquid: posisi cahaya mengikuti kursor ===== */
+  /* ===== Tombol liquid ===== */
   document.querySelectorAll('.btn').forEach(b => b.addEventListener('mousemove', e => {
     const r=b.getBoundingClientRect(); b.style.setProperty('--x',(e.clientX-r.left)+'px'); b.style.setProperty('--y',(e.clientY-r.top)+'px'); }));
 
@@ -317,7 +312,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const viz=$('#viz'), bars=[]; for(let i=0;i<24;i++){ const b=document.createElement('i'); viz.appendChild(b); bars.push(b); }
   const disc=$('#disc'), playBtn=$('#playBtn'); let playing=false, vizT=null, actx=null, melT=null, audio=null;
   if(AUDIO_SRC){ audio=new Audio(AUDIO_SRC); audio.loop=true; }
-  // Melodi bawaan (Web Audio) jika AUDIO_SRC kosong
   const NOTES=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46]; let ni=0;
   function chime(){
     const o=actx.createOscillator(), g=actx.createGain(); o.type='sine'; o.frequency.value=NOTES[ni++%NOTES.length];
@@ -364,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.reset();
   });
   $('#ctaBtn').addEventListener('click', celebrate);
-  setTimeout(celebrate, 1200); // konfeti sambutan
+  setTimeout(celebrate, 1200);
 });
 </script>
 </body>
