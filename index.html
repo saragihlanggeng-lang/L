@@ -4,12 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Talita Humaira Affandi · 10 November 2026</title>
+
 <!-- Pustaka via CDN -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/canvas-confetti/1.9.3/confetti.browser.min.js"></script>
+
+<!-- Firebase SDK (Compat Version) -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
 <style>
 /* ===== 1. VARIABEL WARNA & FONT ===== */
@@ -212,7 +217,21 @@ footer p{max-width:520px;margin:0 auto 1.4rem;font-family:var(--serif);font-styl
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  /* ===== KONFIGURASI ===== */
+  /* ===== KONFIGURASI FIREBASE (Proyek hbd-talita) ===== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAFFsN-cO5wIFAiorIPLkkPME--APvd6y0",
+    authDomain: "hbd-talita.firebaseapp.com",
+    projectId: "hbd-talita",
+    storageBucket: "hbd-talita.firebasestorage.app",
+    messagingSenderId: "404609725045",
+    appId: "1:404609725045:web:c717ffd953b0218c8fbe3c",
+    measurementId: "G-X3XV8YHHET"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  /* ===== KONFIGURASI WEB ===== */
   const AVATAR_URL = 'foto/avatar.jpeg';
   const AUDIO_SRC  = 'foto/favorite.mp3';
   const TRACK_NAME = 'Summertime by My Chemical Romance';
@@ -361,10 +380,8 @@ document.addEventListener('DOMContentLoaded', () => {
     playing ? stopMusic() : startMusic();
   });
 
-  // Autoplay otomatis saat halaman dimuat
   startMusic();
 
-  // Pengaman jika autoplay awal diblokir browser: putar saat ada sentuhan/klik/scroll pertama
   const enableAudioOnUserAction = () => {
     if(!playing) startMusic();
     document.removeEventListener('click', enableAudioOnUserAction);
@@ -375,17 +392,26 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('touchstart', enableAudioOnUserAction);
   document.addEventListener('scroll', enableAudioOnUserAction);
 
-  /* ===== Papan ucapan + konfeti ===== */
-  const cards=$('#cards'); let wishes=[
-    {n:'Sahabat', m:'Selamat ulang tahun, Talita! Semoga selalu bahagia dan dikelilingi orang-orang baik 💖'},
-    {n:'Keluarga', m:'Tumbuhlah jadi pribadi yang kuat dan penuh kasih. Kami bangga padamu!'}];
-  try { const s=JSON.parse(localStorage.getItem('talita_wishes')||'[]'); if(Array.isArray(s)) wishes=wishes.concat(s); } catch(e){}
+  /* ===== Papan Ucapan (Firebase Real-time Database) ===== */
+  const cards = $('#cards');
+
   function addCard(w, prepend){
-    const c=document.createElement('div'); c.className='glass card';
-    c.innerHTML=`<h4><i class="fa-solid fa-heart"></i>${esc(w.n)}</h4><p>${esc(w.m)}</p>`;
+    const c = document.createElement('div'); 
+    c.className = 'glass card';
+    c.innerHTML = `<h4><i class="fa-solid fa-heart"></i>${esc(w.n)}</h4><p>${esc(w.m)}</p>`;
     prepend ? cards.prepend(c) : cards.appendChild(c);
   }
-  wishes.forEach(w => addCard(w,false));
+
+  // Mengambil pesan dari Firebase secara otomatis
+  db.collection('wishes').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+    cards.innerHTML = ''; 
+    snapshot.forEach(doc => {
+      addCard(doc.data(), false);
+    });
+  }, err => {
+    console.log("Database status:", err);
+  });
+
   function celebrate(){
     if(typeof confetti!=='function' || reduce) return;
     const colors=['#e0a96d','#f4acb7','#64ffda','#ffffff']; let shapes;
@@ -394,13 +420,26 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(()=>confetti({particleCount:60,angle:60,spread:60,origin:{x:0,y:.8},colors}),250);
     setTimeout(()=>confetti({particleCount:60,angle:120,spread:60,origin:{x:1,y:.8},colors}),250);
   }
+
+  // Menyimpan pesan baru ke Firebase
   $('#wishForm').addEventListener('submit', e => {
     e.preventDefault();
-    const n=$('#wName').value.trim(), m=$('#wMsg').value.trim(); if(!n||!m) return;
-    const w={n,m}; addCard(w,true); celebrate();
-    try { const s=JSON.parse(localStorage.getItem('talita_wishes')||'[]'); s.push(w); localStorage.setItem('talita_wishes',JSON.stringify(s)); } catch(err){}
-    e.target.reset();
+    const n = $('#wName').value.trim();
+    const m = $('#wMsg').value.trim(); 
+    if(!n || !m) return;
+
+    db.collection('wishes').add({
+      n: n,
+      m: m,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(() => {
+      celebrate();
+      e.target.reset();
+    }).catch(err => {
+      alert("Gagal mengirim pesan. Pastikan Firestore Database di Firebase sudah dibuat (Start in Test Mode).");
+    });
   });
+
   $('#ctaBtn').addEventListener('click', celebrate);
   setTimeout(celebrate, 1200);
 });
